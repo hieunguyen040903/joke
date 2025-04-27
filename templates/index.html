@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Joke a Day</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <title>Joke Web</title>
+  <script>
+      window.apiUrl = "{{.API_URL}}";
+  </script>
 </head>
 <body class="flex flex-col min-h-screen">
 
@@ -32,21 +36,21 @@
 
   <section class=" py-14 px-4">
     <div class="max-w-4xl mx-auto text-left text-gray-700 text-lg  mb-10">
-      <p class="text-[#646464]">
-        A child asked his father, "How were people born?" So his father said, "Adam and Eve made babies, then their babies became adults and made babies, and so on."
-        The child then went to his mother, asked her the same question and she told him, "We were monkeys then we evolved to become like we are now."
-        The child ran back to his father and said, "You lied to me!" His father replied, "No, your mom was talking about her side of the family."
+      <p class="text-[#646464] joke-content">
+        
       </p>
     </div>
+
+    <input type="hidden" class="joke-id" />
 
     <div class="flex flex-col items-center mt-10 mb-4">
         <div class="max-w-4xl border-t border-gray-200 mb-4"></div>
       
-        <div class="flex flex-wrap justify-center gap-5 mt-5">
-            <button class="bg-[#2C7EDB] hover:bg-[#1f5fac] text-white font-semibold py-3 px-14 w-[250px] rounded">
+        <div class="flex flex-wrap justify-center gap-5 mt-5 vote-buttons">
+            <button class="vote-funny bg-[#2C7EDB] hover:bg-[#1f5fac] text-white font-semibold py-3 px-14 w-[250px] rounded ">
                 This is Funny!
               </button>
-              <button class="bg-[#29B363] hover:bg-[#20894f] text-white font-semibold py-3 px-14 w-[250px] rounded">
+              <button class="vote-not-funny bg-[#29B363] hover:bg-[#20894f] text-white font-semibold py-3 px-14 w-[250px] rounded ">
                 This is not funny.
               </button>
         </div>
@@ -65,5 +69,7 @@
     </div>
   </footer>
 
+
+  <script src="/static/js/main.js"></script>
 </body>
 </html>
