@@ -30,7 +30,7 @@ func main() {
 		return
 	}
 
-	db.AutoMigrate(&models.Vote{}, &models.Joke{})
+	db.AutoMigrate(&models.Vote{}, &models.Joke{}, &models.JokeView{})
 	config.SeedData()
 
 	r.GET("/", func(c *gin.Context) {
