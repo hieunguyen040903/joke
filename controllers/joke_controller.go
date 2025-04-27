@@ -1,21 +1,53 @@
 package controllers
 
 import (
+	"errors"
 	"joke-web/models"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
+var ErrNoJokesLeft = errors.New("that's all the jokes for today! Come back another day!")
+
 func GetJoke(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var joke models.Joke
-		if err := db.Where("id NOT IN (?)", db.Model(&models.Vote{}).Select("joke_id")).First(&joke).Error; err != nil {
-			c.JSON(http.StatusOK, gin.H{"message": "That's all the jokes for today! Come back another day!"})
+		userCookieID := c.DefaultQuery("user_cookie_id", "")
+		if userCookieID == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "No user_cookie_id provided"})
 			return
 		}
-		c.JSON(http.StatusOK, joke)
+
+		var joke models.Joke
+		err := db.Table("jokes").Where("id NOT IN (SELECT joke_id FROM joke_views WHERE user_cookie_id = ?)", userCookieID).
+			First(&joke).Error
+
+		if err != nil {
+			if err == gorm.ErrRecordNotFound {
+				c.JSON(http.StatusOK, gin.H{"message": ErrNoJokesLeft.Error()})
+			} else {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			}
+			return
+		}
+
+		jokeView := models.JokeView{
+			UserCookieID: userCookieID,
+			JokeID:       joke.ID,
+		}
+
+		err = db.Create(&jokeView).Error
+		if err != nil {
+			log.Printf("Error saving joke view: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to save joke view"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"joke": joke,
+		})
 	}
 }
 
