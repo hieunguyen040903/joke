@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -12,10 +11,10 @@ import (
 
 var DB *gorm.DB
 
-func ConnectDB() {
+func ConnectDB() (*gorm.DB, error) {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Failed to load .env file:", err)
+		return nil, fmt.Errorf("failed to load .env file: %v", err)
 	}
 
 	fmt.Println("Loading environment variables from .env file...")
@@ -31,18 +30,20 @@ func ConnectDB() {
 
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatal("Failed to connect to the database:", err)
+		return nil, fmt.Errorf("failed to connect to the database: %v", err)
 	}
 
 	sqlDB, err := DB.DB()
 	if err != nil {
-		log.Fatal("Failed to get SQL connection info:", err)
+		return nil, fmt.Errorf("failed to get SQL connection info: %v", err)
 	}
 
 	err = sqlDB.Ping()
 	if err != nil {
-		log.Fatal("Database ping failed:", err)
+		return nil, fmt.Errorf("database ping failed: %v", err)
 	}
 	fmt.Println("Database connection successful!")
+
+	return DB, nil
 
 }
