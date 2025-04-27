@@ -24,7 +24,7 @@ async function getJoke() {
     }
 
     try {
-        const response = await fetch(`${window.apiUrl}/joke?user_cookie_id=${userCookieID}`);
+        const response = await fetch(`https://joke-production.up.railway.app/joke?user_cookie_id=${userCookieID}`);
         const data = await response.json();
         
         if (data.joke) {
@@ -52,7 +52,7 @@ async function vote(jokeId, isFunny) {
     // console.log("Sending vote data:", voteData);
 
     try {
-        const response = await fetch(`${window.apiUrl}/vote`, {
+        const response = await fetch(`https://joke-production.up.railway.app/vote`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
