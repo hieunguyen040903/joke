@@ -12,12 +12,11 @@ import (
 var DB *gorm.DB
 
 func ConnectDB() (*gorm.DB, error) {
-	err := godotenv.Load()
-	if err != nil {
-		return nil, fmt.Errorf("failed to load .env file: %v", err)
+	if os.Getenv("RAILWAY_ENVIRONMENT_ID") == "" {
+		_ = godotenv.Load()
 	}
 
-	fmt.Println("Loading environment variables from .env file...")
+	fmt.Println("Connecting to Database...")
 	fmt.Println("DB User:", os.Getenv("DB_USER"))
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
@@ -28,7 +27,7 @@ func ConnectDB() (*gorm.DB, error) {
 		os.Getenv("DB_NAME"),
 	)
 
-	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	DB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to the database: %v", err)
 	}
@@ -42,8 +41,8 @@ func ConnectDB() (*gorm.DB, error) {
 	if err != nil {
 		return nil, fmt.Errorf("database ping failed: %v", err)
 	}
+
 	fmt.Println("Database connection successful!")
 
 	return DB, nil
-
 }
