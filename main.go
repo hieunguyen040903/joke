@@ -31,7 +31,7 @@ func main() {
 	}
 
 	db.AutoMigrate(&models.Vote{}, &models.Joke{}, &models.JokeView{})
-	config.SeedData()
+	config.SeedData(db)
 
 	r.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index.html", gin.H{
