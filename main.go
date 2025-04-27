@@ -5,7 +5,6 @@ import (
 	"joke-web/config"
 	"joke-web/models"
 	"joke-web/routes"
-	"log"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -13,11 +12,7 @@ import (
 )
 
 func main() {
-
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	_ = godotenv.Load()
 
 	apiURL := os.Getenv("API_URL")
 	if apiURL == "" {
@@ -30,14 +25,12 @@ func main() {
 	r.LoadHTMLGlob("templates/*.html")
 
 	db, err := config.ConnectDB()
-
 	if err != nil {
 		fmt.Println("Error connecting to the database:", err)
 		return
 	}
 
 	config.DB.AutoMigrate(&models.Vote{}, &models.Joke{})
-
 	config.SeedData()
 
 	r.GET("/", func(c *gin.Context) {
@@ -48,5 +41,9 @@ func main() {
 
 	routes.RegisterRoutes(r, db)
 
-	r.Run(":8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	r.Run(":" + port)
 }
